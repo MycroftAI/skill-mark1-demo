@@ -6,7 +6,10 @@ class Mark1DemoSkill(MycroftSkill):
         super(Mark1DemoSkill, self).__init__("Mark1DemoSkill")
 
     def initialize(self):
-        pass
+        self.emitter.on("mycroft.mark1.demo", self.demo)
+
+    def demo(self, message):
+        self.enclosure.mouth_text("Meu Chapaaaaa")
 
     def stop(self):
         pass
