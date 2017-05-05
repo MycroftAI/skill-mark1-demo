@@ -9,7 +9,14 @@ class Mark1DemoSkill(MycroftSkill):
         self.emitter.on("mycroft.mark1.demo", self.demo)
 
     def demo(self, message):
-        self.enclosure.mouth_text("Meu Chapaaaaa")
+        self.name()
+        self.change_eyes()
+
+    def change_eyes(self):
+        self.enclosure.eyes_narrow()
+
+    def name(self):
+        self.enclosure.mouth_text("Hello, My name is Mark One")
 
     def stop(self):
         pass
