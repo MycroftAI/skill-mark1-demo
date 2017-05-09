@@ -1,4 +1,4 @@
-from threading import Timer
+from threading import Timer, Thread
 
 import time
 from mycroft.messagebus.message import Message
@@ -8,49 +8,50 @@ from mycroft.skills.core import MycroftSkill
 class Mark1DemoSkill(MycroftSkill):
     def __init__(self):
         super(Mark1DemoSkill, self).__init__("Mark1DemoSkill")
+        self.animations = []
+        self.playing = True
         self.thread = None
-        self.kill = False
 
     def initialize(self):
         self.emitter.on("mycroft.mark1.demo", self.demo)
+        self.demo("")
 
-    def sleep(self, t):
-        if self.kill:
-            raise Exception
-        time.sleep(t)
+    def animate(self, t, often, func, *args):
+        t = time.time() + t
+        self.animations.append({
+            "time": t,
+            "often": often,
+            "func": func,
+            "args": args
+        })
 
-    def mark1(self):
-        self.enclosure.mouth_text("Hello, My name is Mark One")
-        self.emitter.emit(Message("mycroft.sing"))
-        for i in range(0, 10):
-            self.enclosure.eyes_look("l")
-            self.sleep(1)
-            self.enclosure.eyes_look("u")
-            self.sleep(1)
-            self.enclosure.eyes_look("d")
-            self.sleep(1)
-            self.enclosure.eyes_look("r")
-            self.sleep(1)
-        self.enclosure.eyes_reset()
-        self.sleep(1)
-        self.speak("It is my first time in the world")
-        self.sleep(3)
-        self.enclosure.eyes_narrow()
-        self.enclosure.mouth_text("Talk with me")
-        for i in range(1, 50):
-            self.enclosure.eyes_brightness(i)
-            self.sleep(0.1)
-        self.enclosure.eyes_reset()
+    def run(self):
+        while self.playing:
+            for animation in self.animations:
+                if animation["time"] <= time.time():
+                    animation["func"](*animation["args"])
+                    if type(animation["often"]) is int:
+                        animation["time"] = time.time() + animation["often"]
+                    else:
+                        often = int(animation["often"])
+                        t = animation["time"]
+                        animation["time"] = time.time() + (often - t % often)
+            time.sleep(0.1)
 
     def demo(self, message):
-        try:
-            self.kill = False
-            self.mark1()
-        except:
-            self.enclosure.eyes_reset()
+        self.animate(0, 8, self.enclosure.eyes_look, "r")
+        self.animate(2, 8, self.enclosure.eyes_look, "l")
+        self.animate(4, 8, self.enclosure.eyes_look, "d")
+        self.animate(6, 8, self.enclosure.eyes_look, "u")
+        self.animate(0, "300", self.speak, "Hi")
+        self.thread = Thread(None, self.run)
+        self.thread.daemon = True
+        self.thread.start()
 
     def stop(self):
-        self.kill = True
+        self.playing = False
+        if self.thread:
+            self.thread.cancel()
         self.enclosure.eyes_reset()
 
 
