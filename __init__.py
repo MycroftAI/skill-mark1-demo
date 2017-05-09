@@ -1,6 +1,6 @@
-from threading import Timer, Thread
-
 import time
+from threading import Thread
+
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill
 
@@ -25,6 +25,9 @@ class Mark1DemoSkill(MycroftSkill):
             "args": args
         })
 
+    def __get_time(self, often, t):
+        return often - t % often
+
     def run(self):
         while self.playing:
             for animation in self.animations:
@@ -35,7 +38,8 @@ class Mark1DemoSkill(MycroftSkill):
                     else:
                         often = int(animation["often"])
                         t = animation["time"]
-                        animation["time"] = time.time() + (often - t % often)
+                        animation["time"] = time.time() + self.__get_time(
+                            often, t)
             time.sleep(0.1)
 
     def demo(self, message):
@@ -43,7 +47,8 @@ class Mark1DemoSkill(MycroftSkill):
         self.animate(2, 8, self.enclosure.eyes_look, "l")
         self.animate(4, 8, self.enclosure.eyes_look, "d")
         self.animate(6, 8, self.enclosure.eyes_look, "u")
-        self.animate(0, "300", self.speak, "Hi")
+        self.animate(self.__get_time(120, time.time()), "120",
+                     self.emitter.emit, Message("mycroft.sing"))
         self.thread = Thread(None, self.run)
         self.thread.daemon = True
         self.thread.start()
