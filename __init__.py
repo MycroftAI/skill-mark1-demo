@@ -14,7 +14,6 @@ class Mark1DemoSkill(MycroftSkill):
 
     def initialize(self):
         self.emitter.on("mycroft.mark1.demo", self.demo)
-        self.demo("")
 
     def animate(self, t, often, func, *args):
         t = time.time() + t
