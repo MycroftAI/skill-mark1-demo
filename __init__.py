@@ -42,6 +42,7 @@ class Mark1DemoSkill(MycroftSkill):
             time.sleep(0.1)
 
     def demo(self, message):
+        self.enclosure.system_mute()
         self.animate(0, 8, self.enclosure.eyes_look, "r")
         self.animate(2, 8, self.enclosure.eyes_look, "l")
         self.animate(4, 8, self.enclosure.eyes_look, "d")
