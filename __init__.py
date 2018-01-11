@@ -13,7 +13,7 @@ class Mark1DemoSkill(MycroftSkill):
         self.thread = None
 
     def initialize(self):
-        self.emitter.on("mycroft.mark1.demo", self.demo)
+        self.add_event("mycroft.mark1.demo", self.demo, False)
 
     def animate(self, t, often, func, *args):
         t = time.time() + t
