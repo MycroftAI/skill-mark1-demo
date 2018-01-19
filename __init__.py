@@ -40,7 +40,7 @@ def animate(t, often, func, *args):
     }
 
 
-def __get_time(often, t):
+def _get_time(often, t):
     return often - t % often
 
 #######################################################################
@@ -70,7 +70,7 @@ class Mark1DemoSkill(MycroftSkill):
                     else:
                         often = int(animation["often"])
                         t = animation["time"]
-                        animation["time"] = time.time() + __get_time(
+                        animation["time"] = time.time() + _get_time(
                             often, t)
             time.sleep(0.1)
 
@@ -79,6 +79,13 @@ class Mark1DemoSkill(MycroftSkill):
     def demo(self, message):
         if not self.thread:
             self.playing = True
+
+            self.enclosure.mouth_text("...starting...")
+
+            # Sync clock to make chorus as good as possible
+            self.emitter.emit(Message("system.ntp.sync"))
+            time.sleep(15)
+            self.enclosure.mouth_reset()
 
             # Build the list of animation actions to run
             self.animations = [
@@ -93,7 +100,7 @@ class Mark1DemoSkill(MycroftSkill):
                 # chorus.
                 #
                 # skill-singing handles the mycroft.sing message
-                animate(__get_time(120, time.time()), "120",
+                animate(_get_time(120, time.time()), "120",
                         self.emitter.emit, Message("mycroft.sing"))
             ]
 
