@@ -22,7 +22,7 @@ from mycroft.skills.core import MycroftSkill
 #######################################################################
 # Helpers for building the animation frames
 
-def animation(t, often, func, *args):
+def animate(t, often, func, *args):
     '''
     Args:
         t (int) : seconds from now to begin the frame (secs)
