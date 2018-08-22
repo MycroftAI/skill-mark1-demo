@@ -83,7 +83,7 @@ class Mark1DemoSkill(MycroftSkill):
             self.enclosure.mouth_text("...starting...")
 
             # Sync clock to make chorus as good as possible
-            self.emitter.emit(Message("system.ntp.sync"))
+            self.bus.emit(Message("system.ntp.sync"))
             time.sleep(15)
             self.enclosure.mouth_reset()
 
@@ -101,7 +101,7 @@ class Mark1DemoSkill(MycroftSkill):
                 #
                 # skill-singing handles the mycroft.sing message
                 animate(_get_time(120, time.time()), "120",
-                        self.emitter.emit, Message("mycroft.sing"))
+                        self.bus.emit, Message("mycroft.sing"))
             ]
 
             self.thread = Thread(None, self.run)
