@@ -3,7 +3,7 @@
 settings.json
 
 # python compiled files
-*.pyc
+.*.pyc
 
 # Vim temp files
 .*.sw?
